@@ -17,7 +17,7 @@
 
 ## 📸 软件预览
 
-![软件预览](https://foruda.gitee.com/images/1779463747205103672/b38a7d53_5151444.png "屏幕截图")
+<img width="1536" height="1024" alt="091db9be59684ff1059b6d8aa7eb59b6" src="https://github.com/user-attachments/assets/f97fa490-d29c-4596-88ff-157704ab1d2d" />
 
 ## 📱 关注公众号 / 加群 备注 易下载
 
