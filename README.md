@@ -17,11 +17,7 @@
 
 ## 📸 软件预览
 
-<div style="display: flex; justify-content: space-between; margin-bottom: 20px;">
-  <img src="https://github.com/user-attachments/assets/4c2a4bce-a28c-472f-87b1-18abfcb9564f" width="48%" alt="软件界面预览"/>
-  <img src="https://github.com/user-attachments/assets/c430eb7d-7cb4-4889-8489-5da750b1d5a7" width="48%" alt="功能展示"/>
-</div>
-
+![软件预览](https://foruda.gitee.com/images/1779463328032161435/75db07ae_5151444.png)
 
 ## 📱 关注公众号 / 加群 备注 易下载
 
