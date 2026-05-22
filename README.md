@@ -23,7 +23,10 @@
 </div>
 
 ### 加群 备注 易下载
-<img src="https://foruda.gitee.com/images/1779462265406893356/45d8567c_5151444.jpg" width="48%" alt="加群"/>
+<div style="display: flex; justify-content: space-between; margin-bottom: 20px;">
+  <img src="https://foruda.gitee.com/images/1779462265406893356/45d8567c_5151444.jpg" width="48%" alt="加群"/>
+</div>
+
 
 
 ## 功能概览
