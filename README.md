@@ -22,6 +22,9 @@
   <img src="https://github.com/user-attachments/assets/c430eb7d-7cb4-4889-8489-5da750b1d5a7" width="48%" alt="功能展示"/>
 </div>
 
+### 加群 备注 易下载
+<img src="https://foruda.gitee.com/images/1779462265406893356/45d8567c_5151444.jpg" width="48%" alt="加群"/>
+
 
 ## 功能概览
 
