@@ -22,10 +22,17 @@
   <img src="https://github.com/user-attachments/assets/c430eb7d-7cb4-4889-8489-5da750b1d5a7" width="48%" alt="功能展示"/>
 </div>
 
-### 加群 备注 易下载
+
+## 📱 关注公众号 / 加群 备注 易下载
+
 <div style="display: flex; justify-content: space-between; margin-bottom: 20px;">
-  <img src="https://foruda.gitee.com/images/1779462265406893356/45d8567c_5151444.jpg" width="48%" alt="加群"/>
+  <img src="https://foruda.gitee.com/images/1779462265406893356/45d8567c_5151444.jpg" width="30%" alt="加群"/>
+  <img src="https://github.com/user-attachments/assets/d35dd840-b16e-47e1-a26e-39643a3eb86d" width="30%" alt="公众号二维码"/>
 </div>
+
+> 关注公众号「程序员不易」，获取更多技术干货
+> 
+> 欢迎私信交流学习心得，答疑解惑
 
 
 
@@ -111,10 +118,4 @@
 - 软件使用问题欢迎通过公众号交流
 - 深度合作及其他事宜请通过公众号私信联系
 
-## 📱 关注公众号
-> 关注公众号「程序员不易」，获取更多技术干货
-> 
-> 欢迎私信交流学习心得，答疑解惑
-
-![公众号二维码](https://github.com/user-attachments/assets/d35dd840-b16e-47e1-a26e-39643a3eb86d)
 
