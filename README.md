@@ -115,3 +115,13 @@
 - 深度合作及其他事宜请通过公众号私信联系
 
 
+# 常见问题
+
+macos 出现如下情况
+
+<img width="520" height="496" alt="image" src="https://github.com/user-attachments/assets/f2fcf3b1-4864-45f2-9373-c5cf482cde69" />
+
+进入访达 又击打开 即可 
+<img width="1840" height="872" alt="image" src="https://github.com/user-attachments/assets/921f93fa-ba64-4786-9e03-a4a01c44c798" />
+
+
