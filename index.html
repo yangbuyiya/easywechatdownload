@@ -1,0 +1,2148 @@
+<!doctype html>
+<html lang="zh-CN">
+  <head>
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <title>EasyWechatDownload - 微信公众号内容归档工具</title>
+    <meta
+      name="description"
+      content="EasyWechatDownload 是一款用于归档微信公众号文章、图片、音频、评论、PDF、Markdown、HTML 和 EPUB 的桌面工具。"
+    />
+    <style>
+      :root {
+        color-scheme: light;
+        --bg: #f4f6fb;
+        --surface: rgba(255, 255, 255, 0.78);
+        --surface-strong: rgba(255, 255, 255, 0.94);
+        --surface-muted: rgba(241, 245, 249, 0.88);
+        --text: #1f2329;
+        --muted: #6b7280;
+        --faint: #9ca3af;
+        --line: rgba(31, 41, 55, 0.12);
+        --primary: #1683f8;
+        --primary-dark: #0b6bd3;
+        --blue: #1683f8;
+        --orange: #ff9500;
+        --success: #22c55e;
+        --danger: #e5484d;
+        --shadow: 0 24px 70px rgba(31, 41, 55, 0.13);
+        --soft-shadow: 0 14px 36px rgba(31, 41, 55, 0.1);
+        --radius: 28px;
+        --radius-sm: 18px;
+        --blur: blur(22px) saturate(150%);
+      }
+
+      @media (prefers-color-scheme: dark) {
+        :root {
+          color-scheme: dark;
+          --bg: #1b1f27;
+          --surface: rgba(31, 35, 44, 0.78);
+          --surface-strong: rgba(36, 41, 51, 0.94);
+          --surface-muted: rgba(43, 49, 61, 0.84);
+          --text: #f4f7fb;
+          --muted: #b8c0cc;
+          --faint: #8c96a6;
+          --line: rgba(244, 247, 251, 0.12);
+          --shadow: 0 24px 70px rgba(0, 0, 0, 0.34);
+          --soft-shadow: 0 14px 36px rgba(0, 0, 0, 0.24);
+        }
+      }
+
+      * {
+        box-sizing: border-box;
+      }
+
+      html {
+        scroll-behavior: smooth;
+      }
+
+      body {
+        margin: 0;
+        color: var(--text);
+        overflow-x: clip;
+        background:
+          radial-gradient(circle at 18% 8%, rgba(22, 131, 248, 0.12), transparent 30%),
+          radial-gradient(circle at 78% 4%, rgba(255, 149, 0, 0.08), transparent 28%),
+          linear-gradient(180deg, #ffffff 0%, var(--bg) 42%, var(--bg) 100%);
+        font-family:
+          -apple-system, BlinkMacSystemFont, "SF Pro Display", "Segoe UI", "PingFang SC",
+          "Microsoft YaHei", sans-serif;
+        letter-spacing: 0;
+      }
+
+      @media (prefers-color-scheme: dark) {
+        body {
+          background:
+            radial-gradient(circle at 18% 8%, rgba(22, 131, 248, 0.18), transparent 30%),
+            radial-gradient(circle at 78% 4%, rgba(255, 149, 0, 0.08), transparent 28%),
+            linear-gradient(180deg, #20242d 0%, var(--bg) 48%, #171b22 100%);
+        }
+      }
+
+      a {
+        color: inherit;
+        text-decoration: none;
+      }
+
+      .page {
+        min-height: 100vh;
+      }
+
+      .container {
+        width: min(1160px, calc(100% - 40px));
+        margin: 0 auto;
+      }
+
+      .nav {
+        position: sticky;
+        top: 14px;
+        z-index: 20;
+        width: min(1160px, calc(100% - 40px));
+        margin: 14px auto 0;
+        padding: 10px 12px;
+        display: flex;
+        align-items: center;
+        justify-content: space-between;
+        gap: 18px;
+        background: var(--surface);
+        border: 1px solid var(--line);
+        border-radius: 22px;
+        box-shadow: var(--soft-shadow);
+        backdrop-filter: var(--blur);
+      }
+
+      .brand {
+        display: flex;
+        align-items: center;
+        gap: 10px;
+        min-width: 0;
+      }
+
+      .brand img {
+        width: 34px;
+        height: 34px;
+        border-radius: 10px;
+        object-fit: cover;
+      }
+
+      .brand span {
+        font-size: 15px;
+        font-weight: 800;
+        white-space: nowrap;
+      }
+
+      .nav-links {
+        display: flex;
+        align-items: center;
+        gap: 6px;
+      }
+
+      .nav-links a {
+        padding: 9px 12px;
+        color: var(--muted);
+        border-radius: 12px;
+        font-size: 14px;
+        font-weight: 650;
+      }
+
+      .nav-links a:hover {
+        color: var(--text);
+        background: var(--surface-muted);
+      }
+
+      .button {
+        display: inline-flex;
+        align-items: center;
+        justify-content: center;
+        gap: 8px;
+        min-height: 44px;
+        padding: 0 18px;
+        border: 1px solid transparent;
+        border-radius: 14px;
+        font-size: 15px;
+        font-weight: 760;
+        transition:
+          transform 160ms ease,
+          box-shadow 160ms ease,
+          border-color 160ms ease;
+      }
+
+      .button:hover {
+        transform: translateY(-1px);
+      }
+
+      .button.primary {
+        color: #fff;
+        background: var(--primary);
+        box-shadow: 0 14px 30px rgba(22, 131, 248, 0.24);
+      }
+
+      .button.secondary {
+        color: var(--text);
+        background: var(--surface-strong);
+        border-color: var(--line);
+      }
+
+      .hero {
+        position: relative;
+        padding: 86px 0 56px;
+      }
+
+      .hero-grid {
+        display: grid;
+        grid-template-columns: minmax(0, 0.86fr) minmax(560px, 1.14fr);
+        gap: 56px;
+        align-items: center;
+      }
+
+      .eyebrow {
+        display: inline-flex;
+        align-items: center;
+        gap: 8px;
+        margin: 0 0 18px;
+        padding: 8px 12px;
+        color: var(--primary-dark);
+        background: rgba(22, 131, 248, 0.1);
+        border: 1px solid rgba(22, 131, 248, 0.16);
+        border-radius: 999px;
+        font-size: 13px;
+        font-weight: 760;
+      }
+
+      @media (prefers-color-scheme: dark) {
+        .eyebrow {
+          color: #7dbbff;
+        }
+      }
+
+      h1 {
+        margin: 0;
+        font-size: clamp(44px, 7vw, 78px);
+        line-height: 1.02;
+        letter-spacing: 0;
+      }
+
+      .hero-copy {
+        margin: 22px 0 0;
+        color: var(--muted);
+        font-size: 18px;
+        line-height: 1.8;
+      }
+
+      .hero-actions {
+        display: flex;
+        align-items: center;
+        flex-wrap: wrap;
+        gap: 12px;
+        margin-top: 30px;
+      }
+
+      .hero-stats {
+        display: grid;
+        grid-template-columns: repeat(3, minmax(0, 1fr));
+        gap: 12px;
+        margin-top: 30px;
+      }
+
+      .stat {
+        padding: 16px;
+        background: var(--surface);
+        border: 1px solid var(--line);
+        border-radius: 18px;
+        backdrop-filter: var(--blur);
+      }
+
+      .stat strong {
+        display: block;
+        font-size: 24px;
+        line-height: 1;
+      }
+
+      .stat span {
+        display: block;
+        margin-top: 8px;
+        color: var(--faint);
+        font-size: 13px;
+      }
+
+      .app-window {
+        position: relative;
+        max-width: 760px;
+        min-height: 590px;
+        margin-left: auto;
+        padding: 28px;
+        background: var(--surface);
+        border: 1px solid var(--line);
+        border-radius: 30px;
+        box-shadow: var(--shadow);
+        backdrop-filter: var(--blur);
+      }
+
+      .window-top {
+        display: flex;
+        align-items: center;
+        justify-content: space-between;
+        gap: 18px;
+        margin-bottom: 22px;
+      }
+
+      .traffic {
+        display: flex;
+        gap: 7px;
+      }
+
+      .traffic i {
+        width: 12px;
+        height: 12px;
+        border-radius: 50%;
+        background: #ff5f57;
+      }
+
+      .traffic i:nth-child(2) {
+        background: #ffbd2e;
+      }
+
+      .traffic i:nth-child(3) {
+        background: #28c840;
+      }
+
+      .window-title {
+        flex: 1;
+        color: var(--faint);
+        font-size: 13px;
+        text-align: center;
+      }
+
+      .mock-app {
+        display: grid;
+        grid-template-columns: 210px minmax(0, 1fr);
+        min-height: 508px;
+        overflow: hidden;
+        background: var(--surface-strong);
+        border: 1px solid var(--line);
+        border-radius: 22px;
+      }
+
+      .mock-sidebar {
+        padding: 24px;
+        background: rgba(22, 131, 248, 0.08);
+        border-right: 1px solid var(--line);
+      }
+
+      .mock-logo {
+        display: flex;
+        align-items: center;
+        gap: 10px;
+        margin-bottom: 28px;
+      }
+
+      .mock-logo img {
+        width: 38px;
+        height: 38px;
+        border-radius: 12px;
+      }
+
+      .mock-logo b {
+        font-size: 14px;
+      }
+
+      .side-item {
+        display: flex;
+        align-items: center;
+        gap: 9px;
+        height: 42px;
+        padding: 0 12px;
+        margin-bottom: 10px;
+        color: var(--muted);
+        border-radius: 12px;
+        font-size: 13px;
+        font-weight: 700;
+      }
+
+      .side-item.active {
+        color: #fff;
+        background: var(--primary);
+      }
+
+      .side-dot {
+        width: 9px;
+        height: 9px;
+        border-radius: 50%;
+        background: currentColor;
+        opacity: 0.68;
+      }
+
+      .mock-main {
+        padding: 28px;
+      }
+
+      .mock-search {
+        display: grid;
+        grid-template-columns: repeat(2, minmax(0, 1fr));
+        gap: 12px;
+        padding: 16px;
+        background: var(--surface-muted);
+        border: 1px solid var(--line);
+        border-radius: 18px;
+      }
+
+      .mock-input {
+        display: flex;
+        grid-column: 1 / -1;
+        align-items: center;
+        min-height: 48px;
+        padding: 0 16px;
+        color: var(--faint);
+        background: var(--surface-strong);
+        border: 1px solid var(--line);
+        border-radius: 13px;
+        font-size: 13px;
+      }
+
+      .mock-btn {
+        display: inline-flex;
+        align-items: center;
+        justify-content: center;
+        min-width: 86px;
+        min-height: 48px;
+        padding: 0 16px;
+        color: #fff;
+        background: var(--primary);
+        border-radius: 13px;
+        font-size: 13px;
+        font-weight: 760;
+      }
+
+      .mock-btn.blue {
+        background: var(--blue);
+      }
+
+      .mock-status {
+        margin-top: 22px;
+        padding: 22px;
+        background: rgba(10, 132, 255, 0.08);
+        border: 1px solid rgba(10, 132, 255, 0.16);
+        border-radius: 18px;
+        transition:
+          background 220ms ease,
+          border-color 220ms ease;
+      }
+
+      .mock-status.is-captured {
+        background: rgba(34, 197, 94, 0.1);
+        border-color: rgba(34, 197, 94, 0.24);
+      }
+
+      .mock-status h3,
+      .mock-panel h3 {
+        margin: 0;
+        font-size: 16px;
+      }
+
+      .status-row {
+        display: grid;
+        grid-template-columns: minmax(0, 1fr) auto;
+        gap: 18px;
+        align-items: center;
+        margin-top: 18px;
+      }
+
+      .progress {
+        height: 10px;
+        overflow: hidden;
+        background: rgba(10, 132, 255, 0.12);
+        border-radius: 999px;
+      }
+
+      .progress span {
+        display: block;
+        width: 76%;
+        height: 100%;
+        background: var(--blue);
+        border-radius: inherit;
+        transition:
+          width 420ms ease,
+          background 220ms ease;
+      }
+
+      .mock-status.is-captured .progress span {
+        background: var(--success);
+      }
+
+      .time {
+        font-size: 30px;
+        font-weight: 850;
+        transition:
+          color 220ms ease,
+          transform 220ms ease;
+      }
+
+      .time.is-ticking {
+        color: var(--blue);
+        transform: scale(1.04);
+      }
+
+      .mock-status.is-captured .time {
+        color: var(--success);
+      }
+
+      .mock-panels {
+        display: grid;
+        grid-template-columns: repeat(2, minmax(0, 1fr));
+        gap: 18px;
+        margin-top: 22px;
+      }
+
+      .mock-panel {
+        min-height: 158px;
+        padding: 20px;
+        background: var(--surface-muted);
+        border: 1px solid var(--line);
+        border-radius: 18px;
+      }
+
+      .rows {
+        display: grid;
+        gap: 10px;
+        margin-top: 16px;
+      }
+
+      .row {
+        display: grid;
+        grid-template-columns: 56px minmax(0, 1fr) 48px;
+        gap: 10px;
+        align-items: center;
+        color: var(--muted);
+        font-size: 12px;
+      }
+
+      .tag {
+        display: inline-flex;
+        align-items: center;
+        justify-content: center;
+        height: 22px;
+        color: #fff;
+        background: var(--success);
+        border-radius: 7px;
+        font-size: 11px;
+        font-weight: 800;
+      }
+
+      .tag.warn {
+        background: var(--orange);
+      }
+
+      .tag.info {
+        background: var(--blue);
+      }
+
+      .tag.idle {
+        color: var(--muted);
+        background: var(--line);
+      }
+
+      .line {
+        overflow: hidden;
+        height: 8px;
+        background: var(--line);
+        border-radius: 999px;
+      }
+
+      .line span {
+        display: block;
+        width: 0;
+        height: 100%;
+        background: var(--blue);
+        border-radius: inherit;
+        transition:
+          width 520ms ease,
+          background 220ms ease;
+      }
+
+      .line.done span {
+        width: 100%;
+        background: var(--success);
+      }
+
+      .line.loading span {
+        width: 68%;
+        background: var(--blue);
+      }
+
+      .line.waiting span {
+        width: 18%;
+        background: var(--orange);
+      }
+
+      section {
+        padding: 58px 0;
+      }
+
+      .section-head {
+        display: flex;
+        align-items: end;
+        justify-content: space-between;
+        gap: 24px;
+        margin-bottom: 24px;
+      }
+
+      .section-head h2 {
+        max-width: 680px;
+        margin: 0;
+        font-size: clamp(30px, 4vw, 48px);
+        line-height: 1.12;
+      }
+
+      .section-head p {
+        max-width: 420px;
+        margin: 0;
+        color: var(--muted);
+        line-height: 1.7;
+      }
+
+      .cards {
+        display: grid;
+        grid-template-columns: repeat(3, minmax(0, 1fr));
+        gap: 16px;
+      }
+
+      .card {
+        min-height: 230px;
+        padding: 22px;
+        background: var(--surface);
+        border: 1px solid var(--line);
+        border-radius: var(--radius-sm);
+        box-shadow: var(--soft-shadow);
+        backdrop-filter: var(--blur);
+      }
+
+      .icon {
+        display: grid;
+        width: 46px;
+        height: 46px;
+        margin-bottom: 18px;
+        color: #fff;
+        background: var(--primary);
+        border-radius: 14px;
+        place-items: center;
+        font-size: 22px;
+        font-weight: 900;
+      }
+
+      .card:nth-child(2) .icon,
+      .card:nth-child(5) .icon {
+        background: var(--blue);
+      }
+
+      .card:nth-child(3) .icon,
+      .card:nth-child(6) .icon {
+        background: var(--orange);
+      }
+
+      .card h3 {
+        margin: 0;
+        font-size: 20px;
+      }
+
+      .card p {
+        margin: 12px 0 0;
+        color: var(--muted);
+        line-height: 1.7;
+      }
+
+      .showcase {
+        position: relative;
+      }
+
+      .showcase-scroll {
+        position: relative;
+        height: 300vh;
+      }
+
+      .showcase-sticky {
+        position: sticky;
+        top: 0;
+        height: 100vh;
+        padding: 92px 0 48px;
+        display: flex;
+        align-items: center;
+        overflow: hidden;
+      }
+
+      .showcase-track {
+        display: flex;
+        gap: 18px;
+        width: 100%;
+        will-change: transform;
+      }
+
+      .screenshot-slide {
+        flex: 0 0 100%;
+      }
+
+      .shot {
+        position: relative;
+        min-height: 360px;
+        padding: 18px;
+        overflow: hidden;
+        background:
+          linear-gradient(135deg, rgba(22, 131, 248, 0.08), rgba(255, 149, 0, 0.06)),
+          var(--surface);
+        border: 1px dashed rgba(99, 113, 109, 0.42);
+        border-radius: var(--radius);
+        box-shadow: var(--soft-shadow);
+        height: fit-content;
+      }
+
+      .shot.small {
+        min-height: 171px;
+      }
+
+      .shot-content {
+        display: grid;
+        height: 100%;
+        min-height: 320px;
+        place-items: center;
+        color: var(--muted);
+        text-align: center;
+      }
+
+      .shot.small .shot-content {
+        min-height: 132px;
+      }
+
+      .shot-content strong {
+        display: block;
+        color: var(--text);
+        font-size: 20px;
+      }
+
+      .shot-content span {
+        display: block;
+        margin-top: 8px;
+        font-size: 14px;
+      }
+
+      .screenshot-frame {
+        position: relative;
+        width: 100%;
+        min-height: 320px;
+        display: grid;
+        overflow: hidden;
+        background: var(--surface-strong);
+        border: 1px solid var(--line);
+        border-radius: 22px;
+        place-items: center;
+      }
+
+      .screenshot-frame.main {
+        aspect-ratio: 2048 / 1334;
+      }
+
+      .screenshot-frame.compact {
+        min-height: 132px;
+        aspect-ratio: 16 / 13;
+      }
+
+      .screenshot-image {
+        width: 100%;
+        height: 100%;
+        display: block;
+        object-fit: cover;
+      }
+
+      .screenshot-placeholder {
+        display: grid;
+        width: 100%;
+        height: 100%;
+        min-height: inherit;
+        padding: 24px;
+        place-items: center;
+        color: var(--muted);
+        text-align: center;
+      }
+
+      .screenshot-placeholder strong {
+        display: block;
+        color: var(--text);
+        font-size: 20px;
+      }
+
+      .screenshot-placeholder span {
+        display: block;
+        max-width: 360px;
+        margin-top: 8px;
+        font-size: 13px;
+        line-height: 1.6;
+      }
+
+      .feedback-preview {
+        width: 100%;
+        min-height: 320px;
+        padding: 20px;
+        background: var(--surface-strong);
+        border: 1px solid var(--line);
+        border-radius: 22px;
+        text-align: left;
+      }
+
+      .feedback-preview-head {
+        display: flex;
+        align-items: end;
+        justify-content: space-between;
+        gap: 14px;
+        margin-bottom: 18px;
+      }
+
+      .feedback-preview-kicker {
+        color: var(--faint);
+        font-size: 12px;
+        font-weight: 800;
+      }
+
+      .feedback-preview-title {
+        margin-top: 4px;
+        color: var(--text);
+        font-size: 26px;
+        font-weight: 900;
+      }
+
+      .feedback-preview-actions {
+        display: flex;
+        gap: 8px;
+      }
+
+      .feedback-mini-btn {
+        min-height: 32px;
+        padding: 0 12px;
+        display: inline-flex;
+        align-items: center;
+        justify-content: center;
+        color: var(--muted);
+        background: var(--surface);
+        border: 1px solid var(--line);
+        border-radius: 10px;
+        font-size: 12px;
+        font-weight: 800;
+        white-space: nowrap;
+      }
+
+      .feedback-mini-btn.primary {
+        color: #fff;
+        background: var(--blue);
+        border-color: var(--blue);
+      }
+
+      .feedback-preview-grid {
+        display: grid;
+        grid-template-columns: 1.25fr 0.75fr;
+        gap: 14px;
+      }
+
+      .feedback-form,
+      .feedback-mail {
+        min-height: 232px;
+        padding: 16px;
+        background: var(--surface);
+        border: 1px solid var(--line);
+        border-radius: 18px;
+      }
+
+      .feedback-box-title {
+        display: flex;
+        align-items: center;
+        gap: 8px;
+        margin-bottom: 14px;
+        color: var(--text);
+        font-size: 16px;
+        font-weight: 900;
+      }
+
+      .feedback-dot {
+        width: 18px;
+        height: 18px;
+        display: grid;
+        color: var(--blue);
+        background: rgba(22, 131, 248, 0.12);
+        border-radius: 50%;
+        place-items: center;
+        font-size: 12px;
+      }
+
+      .feedback-tabs {
+        display: grid;
+        grid-template-columns: repeat(4, minmax(0, 1fr));
+        overflow: hidden;
+        border: 1px solid var(--line);
+        border-radius: 10px;
+      }
+
+      .feedback-tab {
+        min-height: 32px;
+        display: grid;
+        place-items: center;
+        color: var(--muted);
+        background: var(--surface-strong);
+        border-right: 1px solid var(--line);
+        font-size: 12px;
+        font-weight: 800;
+      }
+
+      .feedback-tab:last-child {
+        border-right: 0;
+      }
+
+      .feedback-tab.active {
+        color: #fff;
+        background: var(--blue);
+      }
+
+      .feedback-input,
+      .feedback-textarea,
+      .feedback-diagnostics,
+      .feedback-mail-body {
+        margin-top: 12px;
+        background: var(--surface-muted);
+        border: 1px solid var(--line);
+        border-radius: 12px;
+      }
+
+      .feedback-input {
+        height: 34px;
+      }
+
+      .feedback-textarea {
+        height: 86px;
+      }
+
+      .feedback-diagnostics {
+        min-height: 58px;
+        padding: 12px;
+        display: flex;
+        align-items: center;
+        justify-content: space-between;
+        gap: 12px;
+      }
+
+      .feedback-check {
+        width: 16px;
+        height: 16px;
+        background: var(--blue);
+        border-radius: 5px;
+      }
+
+      .feedback-mail-body {
+        min-height: 166px;
+        padding: 14px;
+        color: var(--muted);
+        font-family: "SFMono-Regular", Consolas, monospace;
+        font-size: 12px;
+        line-height: 1.7;
+      }
+
+      .feedback-mail-body strong {
+        color: var(--text);
+      }
+
+      .shot.small .feedback-preview {
+        min-height: 132px;
+        padding: 12px;
+        border-radius: 18px;
+      }
+
+      .shot.small .feedback-preview-head {
+        align-items: center;
+        margin-bottom: 10px;
+      }
+
+      .shot.small .feedback-preview-title {
+        font-size: 20px;
+      }
+
+      .shot.small .feedback-preview-actions {
+        display: none;
+      }
+
+      .shot.small .feedback-preview-grid {
+        grid-template-columns: 1fr;
+      }
+
+      .shot.small .feedback-form {
+        min-height: 0;
+        padding: 12px;
+      }
+
+      .shot.small .feedback-mail {
+        display: none;
+      }
+
+      .shot.small .feedback-box-title {
+        margin-bottom: 10px;
+        font-size: 13px;
+      }
+
+      .shot.small .feedback-tabs {
+        grid-template-columns: repeat(2, minmax(0, 1fr));
+      }
+
+      .shot.small .feedback-tab {
+        min-height: 26px;
+        font-size: 10px;
+      }
+
+      .shot.small .feedback-input {
+        height: 28px;
+      }
+
+      .shot.small .feedback-textarea {
+        height: 42px;
+      }
+
+      .shot.small .feedback-diagnostics {
+        min-height: 42px;
+        padding: 8px;
+      }
+
+      .home-preview {
+        width: 100%;
+        min-height: 132px;
+        padding: 12px;
+        background: var(--surface-strong);
+        border: 1px solid var(--line);
+        border-radius: 18px;
+        text-align: left;
+      }
+
+      .home-preview-top {
+        display: grid;
+        grid-template-columns: minmax(0, 1fr) auto auto auto;
+        gap: 8px;
+        align-items: center;
+        padding: 8px;
+        background: var(--surface-muted);
+        border: 1px solid var(--line);
+        border-radius: 14px;
+      }
+
+      .home-preview-url {
+        min-height: 30px;
+        display: flex;
+        align-items: center;
+        padding: 0 10px;
+        color: var(--faint);
+        background: var(--surface);
+        border: 1px solid var(--line);
+        border-radius: 10px;
+        font-size: 11px;
+        overflow: hidden;
+        white-space: nowrap;
+      }
+
+      .home-preview-btn {
+        min-height: 30px;
+        display: inline-flex;
+        align-items: center;
+        justify-content: center;
+        padding: 0 10px;
+        color: #fff;
+        background: var(--blue);
+        border-radius: 10px;
+        font-size: 11px;
+        font-weight: 850;
+        white-space: nowrap;
+      }
+
+      .home-preview-btn.warn {
+        background: var(--orange);
+      }
+
+      .home-preview-card {
+        margin-top: 10px;
+        padding: 12px;
+        background: var(--surface);
+        border: 1px solid var(--line);
+        border-radius: 14px;
+      }
+
+      .home-preview-head {
+        display: flex;
+        align-items: center;
+        justify-content: space-between;
+        gap: 10px;
+        margin-bottom: 10px;
+      }
+
+      .home-preview-title {
+        color: var(--text);
+        font-size: 13px;
+        font-weight: 900;
+      }
+
+      .home-preview-export {
+        color: var(--blue);
+        font-size: 11px;
+        font-weight: 850;
+      }
+
+      .home-preview-stats {
+        display: grid;
+        grid-template-columns: repeat(5, minmax(0, 1fr));
+        gap: 7px;
+      }
+
+      .home-preview-stat {
+        min-height: 40px;
+        padding: 7px;
+        background: var(--surface-muted);
+        border: 1px solid var(--line);
+        border-radius: 10px;
+      }
+
+      .home-preview-stat span {
+        display: block;
+        color: var(--faint);
+        font-size: 10px;
+      }
+
+      .home-preview-stat strong {
+        display: block;
+        margin-top: 3px;
+        color: var(--text);
+        font-size: 16px;
+        line-height: 1;
+      }
+
+      .home-preview-stat.active strong {
+        color: var(--blue);
+      }
+
+      .home-preview-progress {
+        height: 7px;
+        margin-top: 10px;
+        overflow: hidden;
+        background: var(--line);
+        border-radius: 999px;
+      }
+
+      .home-preview-progress span {
+        display: block;
+        width: 42%;
+        height: 100%;
+        background: var(--blue);
+        border-radius: inherit;
+      }
+
+      .home-preview-table {
+        display: grid;
+        grid-template-columns: 72px minmax(0, 1fr) 40px;
+        gap: 8px;
+        align-items: center;
+        margin-top: 10px;
+        padding: 8px;
+        background: var(--surface-muted);
+        border: 1px solid var(--line);
+        border-radius: 10px;
+        color: var(--muted);
+        font-size: 11px;
+      }
+
+      .home-preview-status {
+        display: inline-flex;
+        align-items: center;
+        justify-content: center;
+        min-height: 22px;
+        color: var(--orange);
+        background: rgba(255, 149, 0, 0.12);
+        border: 1px solid rgba(255, 149, 0, 0.22);
+        border-radius: 7px;
+        font-weight: 850;
+      }
+
+      .home-preview-log {
+        margin-top: 10px;
+        padding: 10px;
+        color: var(--faint);
+        background: var(--surface);
+        border: 1px solid var(--line);
+        border-radius: 12px;
+        font-family: "SFMono-Regular", Consolas, monospace;
+        font-size: 10px;
+        line-height: 1.6;
+      }
+
+      .shot:not(.small) .home-preview {
+        min-height: 0;
+        padding: 20px;
+        border-radius: 22px;
+      }
+
+      .shot:not(.small) .home-preview-top {
+        gap: 12px;
+        padding: 12px;
+      }
+
+      .shot:not(.small) .home-preview-url {
+        min-height: 44px;
+        padding: 0 14px;
+        font-size: 13px;
+      }
+
+      .shot:not(.small) .home-preview-btn {
+        min-height: 44px;
+        padding: 0 16px;
+        font-size: 13px;
+      }
+
+      .shot:not(.small) .home-preview-card {
+        margin-top: 16px;
+        padding: 18px;
+      }
+
+      .shot:not(.small) .home-preview-title {
+        font-size: 20px;
+      }
+
+      .shot:not(.small) .home-preview-stats {
+        gap: 10px;
+      }
+
+      .shot:not(.small) .home-preview-stat {
+        min-height: 58px;
+        padding: 10px;
+      }
+
+      .shot:not(.small) .home-preview-stat strong {
+        font-size: 24px;
+      }
+
+      .shot:not(.small) .home-preview-table {
+        grid-template-columns: 86px minmax(0, 1fr) 58px;
+        margin-top: 14px;
+        padding: 12px;
+        font-size: 13px;
+      }
+
+      .shot:not(.small) .home-preview-log {
+        margin-top: 14px;
+        padding: 14px;
+        font-size: 12px;
+      }
+
+      .settings-preview {
+        width: 100%;
+        min-height: 132px;
+        padding: 12px;
+        background: var(--surface-strong);
+        border: 1px solid var(--line);
+        border-radius: 18px;
+        text-align: left;
+      }
+
+      .settings-preview-head {
+        display: flex;
+        align-items: end;
+        justify-content: space-between;
+        gap: 10px;
+        margin-bottom: 10px;
+      }
+
+      .settings-preview-title {
+        color: var(--text);
+        font-size: 20px;
+        font-weight: 900;
+      }
+
+      .settings-preview-actions {
+        display: flex;
+        gap: 6px;
+        flex-wrap: wrap;
+        justify-content: flex-end;
+      }
+
+      .settings-chip {
+        min-height: 26px;
+        padding: 0 9px;
+        display: inline-flex;
+        align-items: center;
+        justify-content: center;
+        color: var(--muted);
+        background: var(--surface);
+        border: 1px solid var(--line);
+        border-radius: 999px;
+        font-size: 10px;
+        font-weight: 850;
+        white-space: nowrap;
+      }
+
+      .settings-chip.primary {
+        color: #fff;
+        background: var(--blue);
+        border-color: var(--blue);
+      }
+
+      .settings-chip.success {
+        color: #fff;
+        background: var(--success);
+        border-color: var(--success);
+      }
+
+      .settings-path-row {
+        display: grid;
+        grid-template-columns: 1fr 1fr;
+        gap: 8px;
+        margin-bottom: 10px;
+      }
+
+      .settings-path {
+        min-height: 34px;
+        padding: 8px 10px;
+        color: var(--faint);
+        background: var(--surface-muted);
+        border: 1px solid var(--line);
+        border-radius: 10px;
+        font-size: 10px;
+        overflow: hidden;
+        white-space: nowrap;
+      }
+
+      .settings-preview-grid {
+        display: grid;
+        grid-template-columns: 0.92fr 1.08fr;
+        gap: 10px;
+      }
+
+      .settings-panel {
+        min-height: 82px;
+        padding: 12px;
+        background: var(--surface);
+        border: 1px solid var(--line);
+        border-radius: 14px;
+      }
+
+      .settings-panel-title {
+        margin-bottom: 8px;
+        color: var(--text);
+        font-size: 13px;
+        font-weight: 900;
+      }
+
+      .settings-segment {
+        display: grid;
+        grid-template-columns: repeat(2, 1fr);
+        overflow: hidden;
+        border: 1px solid var(--line);
+        border-radius: 10px;
+      }
+
+      .settings-segment span {
+        min-height: 28px;
+        display: grid;
+        place-items: center;
+        color: var(--muted);
+        font-size: 11px;
+        font-weight: 850;
+      }
+
+      .settings-segment span.active {
+        color: #fff;
+        background: var(--blue);
+      }
+
+      .settings-inputs {
+        display: grid;
+        grid-template-columns: repeat(2, 1fr);
+        gap: 8px;
+        margin-top: 8px;
+      }
+
+      .settings-input {
+        min-height: 30px;
+        display: flex;
+        align-items: center;
+        justify-content: center;
+        color: var(--muted);
+        background: var(--surface-muted);
+        border: 1px solid var(--line);
+        border-radius: 9px;
+        font-size: 11px;
+        font-weight: 800;
+      }
+
+      .settings-options {
+        display: grid;
+        grid-template-columns: repeat(2, minmax(0, 1fr));
+        gap: 7px;
+      }
+
+      .settings-option {
+        min-height: 28px;
+        display: flex;
+        align-items: center;
+        gap: 7px;
+        padding: 0 9px;
+        color: var(--blue);
+        background: rgba(22, 131, 248, 0.1);
+        border: 1px solid rgba(22, 131, 248, 0.24);
+        border-radius: 9px;
+        font-size: 11px;
+        font-weight: 850;
+        white-space: nowrap;
+      }
+
+      .settings-option.off {
+        color: var(--muted);
+        background: var(--surface-muted);
+        border-color: var(--line);
+      }
+
+      .settings-check {
+        width: 12px;
+        height: 12px;
+        flex: 0 0 auto;
+        background: var(--blue);
+        border-radius: 3px;
+      }
+
+      .settings-option.off .settings-check {
+        background: transparent;
+        border: 1px solid var(--line);
+      }
+
+      .settings-range {
+        margin-top: 8px;
+        padding: 8px;
+        display: grid;
+        grid-template-columns: repeat(5, 1fr);
+        overflow: hidden;
+        background: var(--surface-muted);
+        border: 1px solid var(--line);
+        border-radius: 10px;
+      }
+
+      .settings-range span {
+        min-height: 24px;
+        display: grid;
+        place-items: center;
+        color: var(--muted);
+        font-size: 10px;
+        font-weight: 850;
+      }
+
+      .settings-range span.active {
+        color: #fff;
+        background: var(--blue);
+        border-radius: 8px;
+      }
+
+      .workflow {
+        display: grid;
+        grid-template-columns: repeat(4, minmax(0, 1fr));
+        gap: 14px;
+        counter-reset: step;
+      }
+
+      .step {
+        position: relative;
+        min-height: 190px;
+        padding: 22px;
+        background: var(--surface-strong);
+        border: 1px solid var(--line);
+        border-radius: var(--radius-sm);
+      }
+
+      .step::before {
+        counter-increment: step;
+        content: counter(step);
+        display: grid;
+        width: 34px;
+        height: 34px;
+        margin-bottom: 18px;
+        color: #fff;
+        background: var(--text);
+        border-radius: 12px;
+        place-items: center;
+        font-weight: 850;
+      }
+
+      .step h3 {
+        margin: 0;
+        font-size: 18px;
+      }
+
+      .step p {
+        margin: 10px 0 0;
+        color: var(--muted);
+        line-height: 1.65;
+      }
+
+      .formats {
+        display: flex;
+        flex-wrap: wrap;
+        gap: 10px;
+      }
+
+      .pill {
+        padding: 11px 14px;
+        color: var(--text);
+        background: var(--surface-strong);
+        border: 1px solid var(--line);
+        border-radius: 999px;
+        font-size: 14px;
+        font-weight: 760;
+      }
+
+      .download {
+        padding: 34px;
+        display: grid;
+        grid-template-columns: minmax(0, 1fr) auto;
+        gap: 24px;
+        align-items: center;
+        background: #1f2937;
+        border: 1px solid rgba(255, 255, 255, 0.1);
+        border-radius: 30px;
+        box-shadow: var(--shadow);
+      }
+
+      .download h2 {
+        margin: 0;
+        color: #fff;
+        font-size: clamp(30px, 4vw, 48px);
+      }
+
+      .download p {
+        margin: 12px 0 0;
+        color: rgba(255, 255, 255, 0.7);
+        line-height: 1.75;
+      }
+
+      .download .button.secondary {
+        color: #1f2329;
+        background: #fff;
+      }
+
+      .faq {
+        display: grid;
+        grid-template-columns: repeat(2, minmax(0, 1fr));
+        gap: 14px;
+      }
+
+      .qa {
+        padding: 20px;
+        background: var(--surface);
+        border: 1px solid var(--line);
+        border-radius: var(--radius-sm);
+      }
+
+      .qa h3 {
+        margin: 0;
+        font-size: 18px;
+      }
+
+      .qa p {
+        margin: 10px 0 0;
+        color: var(--muted);
+        line-height: 1.7;
+      }
+
+      .community {
+        padding: 34px;
+        display: grid;
+        grid-template-columns: minmax(0, 1fr) auto;
+        gap: 28px;
+        align-items: center;
+        background: var(--surface);
+        border: 1px solid var(--line);
+        border-radius: 30px;
+        box-shadow: var(--soft-shadow);
+      }
+
+      .community h2 {
+        margin: 0;
+        font-size: clamp(30px, 4vw, 48px);
+      }
+
+      .community p {
+        max-width: 620px;
+        margin: 12px 0 0;
+        color: var(--muted);
+        line-height: 1.75;
+      }
+
+      .community-note {
+        display: inline-flex;
+        align-items: center;
+        min-height: 36px;
+        margin-top: 18px;
+        padding: 0 14px;
+        color: var(--blue);
+        background: rgba(22, 131, 248, 0.1);
+        border: 1px solid rgba(22, 131, 248, 0.18);
+        border-radius: 999px;
+        font-size: 14px;
+        font-weight: 850;
+      }
+
+      .community-qr {
+        width: clamp(240px, 24vw, 320px);
+        padding: 14px;
+        background: #fff;
+        border: 1px solid var(--line);
+        border-radius: 24px;
+        box-shadow: var(--soft-shadow);
+      }
+
+      .community-qr img {
+        display: block;
+        width: 100%;
+        aspect-ratio: 1;
+        border-radius: 14px;
+        object-fit: cover;
+      }
+
+      .footer {
+        padding: 36px 0 48px;
+        color: var(--faint);
+        font-size: 13px;
+        text-align: center;
+      }
+
+      @media (max-width: 980px) {
+        .hero-grid,
+        .community,
+        .download {
+          grid-template-columns: 1fr;
+        }
+
+        .cards {
+          grid-template-columns: repeat(2, minmax(0, 1fr));
+        }
+
+        .workflow {
+          grid-template-columns: repeat(2, minmax(0, 1fr));
+        }
+
+        .app-window {
+          min-height: 0;
+        }
+      }
+
+      @media (max-width: 720px) {
+        .container,
+        .nav {
+          width: min(100% - 28px, 1160px);
+        }
+
+        .nav {
+          position: static;
+          margin-top: 10px;
+        }
+
+        .nav-links {
+          display: none;
+        }
+
+        .hero {
+          padding-top: 52px;
+        }
+
+        .hero-grid {
+          gap: 28px;
+        }
+
+        .hero-stats,
+        .cards,
+        .workflow,
+        .faq,
+        .mock-panels {
+          grid-template-columns: 1fr;
+        }
+
+        .mock-app {
+          grid-template-columns: 1fr;
+        }
+
+        .mock-sidebar {
+          display: none;
+        }
+
+        .mock-search {
+          grid-template-columns: 1fr;
+        }
+
+        .feedback-preview-grid,
+        .feedback-preview-head {
+          grid-template-columns: 1fr;
+          display: block;
+        }
+
+        .feedback-preview-actions {
+          margin-top: 12px;
+        }
+
+        .section-head {
+          display: block;
+        }
+
+        .section-head p {
+          margin-top: 12px;
+        }
+
+        .download {
+          padding: 24px;
+        }
+
+        .community-qr {
+          width: min(100%, 320px);
+        }
+
+        .showcase-scroll {
+          height: auto;
+        }
+
+        .showcase-sticky {
+          position: static;
+          height: auto;
+          overflow: visible;
+        }
+
+        .showcase-track {
+          display: grid;
+          transform: none !important;
+        }
+
+        .screenshot-slide {
+          width: 100%;
+        }
+      }
+    </style>
+  </head>
+  <body>
+    <main class="page">
+      <nav class="nav">
+        <a class="brand" href="#top" aria-label="EasyWechatDownload">
+          <img
+            src="https://foruda.gitee.com/images/1780205472611928810/451a40b4_5151444.png"
+            alt="EasyWechatDownload logo"
+          />
+          <span>EasyWechatDownload</span>
+        </a>
+        <div class="nav-links">
+          <a href="#features">功能</a>
+          <a href="#showcase">截图</a>
+          <a href="#workflow">流程</a>
+          <a href="#community">交流群</a>
+          <a href="#download">下载</a>
+        </div>
+        <a class="button primary" href="https://github.com/yangbuyiya/EasyWechatDownload/releases">下载最新版</a>
+      </nav>
+
+      <header id="top" class="hero">
+        <div class="container hero-grid">
+          <div>
+            <p class="eyebrow">微信公众号内容归档桌面工具</p>
+            <h1>把公众号文章稳定保存到本地。</h1>
+            <p class="hero-copy">
+              EasyWechatDownload 支持单篇下载、批量监听、监控下载、任务报告、诊断反馈和自动更新，
+              适合内容整理、资料归档、运营备份和个人知识库沉淀。
+            </p>
+            <div class="hero-actions">
+              <a class="button primary" href="https://github.com/yangbuyiya/EasyWechatDownload/releases">下载最新版本</a>
+              <a class="button secondary" href="#showcase">查看界面</a>
+            </div>
+            <div class="hero-stats">
+              <div class="stat"><strong>7+</strong><span>内容保存格式</span></div>
+              <div class="stat"><strong>60s</strong><span>批量监听倒计时</span></div>
+              <div class="stat"><strong>GitHub</strong><span>以 Releases 最新版为准</span></div>
+            </div>
+          </div>
+
+          <div class="app-window" aria-label="软件界面预览">
+            <div class="window-top">
+              <div class="traffic"><i></i><i></i><i></i></div>
+              <div class="window-title">EasyWechatDownload - Dashboard</div>
+              <div style="width: 52px"></div>
+            </div>
+            <div class="mock-app">
+              <aside class="mock-sidebar">
+                <div class="mock-logo">
+                  <img
+                    src="https://foruda.gitee.com/images/1780205472611928810/451a40b4_5151444.png"
+                    alt=""
+                  />
+                  <b>Easy WeChat</b>
+                </div>
+                <div class="side-item active"><span class="side-dot"></span>文章下载</div>
+                <div class="side-item"><span class="side-dot"></span>使用教程</div>
+                <div class="side-item"><span class="side-dot"></span>系统设置</div>
+                <div class="side-item"><span class="side-dot"></span>创建电子书</div>
+                <div class="side-item"><span class="side-dot"></span>反馈中心</div>
+              </aside>
+              <div class="mock-main">
+                <div class="mock-search">
+                  <div class="mock-input">https://mp.weixin.qq.com/s/...</div>
+                  <div class="mock-btn">下载文章</div>
+                  <div class="mock-btn blue">批量下载</div>
+                </div>
+                <div class="mock-status" id="mockStatus">
+                  <h3 id="captureTitle">等待微信文章请求</h3>
+                  <div class="status-row">
+                    <div class="progress"><span id="captureProgress"></span></div>
+                    <div class="time" id="captureTimer">47s</div>
+                  </div>
+                </div>
+                <div class="mock-panels">
+                  <div class="mock-panel">
+                    <h3>下载任务中心</h3>
+                    <div class="rows">
+                      <div class="row">
+                        <span class="tag info" data-task-tag>监听</span>
+                        <span class="line loading" data-task-line><span></span></span>
+                        <span data-task-format>文章</span>
+                      </div>
+                      <div class="row">
+                        <span class="tag idle" data-task-tag>等待</span>
+                        <span class="line waiting" data-task-line><span></span></span>
+                        <span data-task-format>PDF</span>
+                      </div>
+                      <div class="row">
+                        <span class="tag idle" data-task-tag>等待</span>
+                        <span class="line waiting" data-task-line><span></span></span>
+                        <span data-task-format>MD</span>
+                      </div>
+                    </div>
+                  </div>
+                  <div class="mock-panel">
+                    <h3>反馈诊断</h3>
+                    <div class="rows">
+                      <div class="row"><span class="tag">日志</span><span class="line"></span><span>脱敏</span></div>
+                      <div class="row"><span class="tag">SMTP</span><span class="line"></span><span>发送</span></div>
+                      <div class="row"><span class="tag warn">摘要</span><span class="line"></span><span>30K</span></div>
+                    </div>
+                  </div>
+                </div>
+              </div>
+            </div>
+          </div>
+        </div>
+      </header>
+
+      <section id="features">
+        <div class="container">
+          <div class="section-head">
+            <h2>从下载、整理到问题反馈，围绕真实使用流程设计。</h2>
+            <p>保留原始内容，也能导出适合阅读和整理的格式；遇到问题时，诊断信息可直接发送给维护者。</p>
+          </div>
+          <div class="cards">
+            <article class="card">
+              <div class="icon">↓</div>
+              <h3>单篇与批量下载</h3>
+              <p>粘贴文章链接可直接下载；批量模式通过代理监听公众号主页文章请求，适合归档历史内容。</p>
+            </article>
+            <article class="card">
+              <div class="icon">▦</div>
+              <h3>任务中心与报告</h3>
+              <p>实时展示成功、失败、跳过和下载中状态，失败项可重试，下载完成后可导出 JSON 报告。</p>
+            </article>
+            <article class="card">
+              <div class="icon">◌</div>
+              <h3>安全代理恢复</h3>
+              <p>开启本地代理前保存系统代理状态，结束后按原状态恢复，避免影响用户原有 VPN 或代理设置。</p>
+            </article>
+            <article class="card">
+              <div class="icon">✦</div>
+              <h3>多格式归档</h3>
+              <p>支持 HTML、原始 HTML、Markdown、PDF、图片、音频、评论、MySQL 和 EPUB 创建等场景。</p>
+            </article>
+            <article class="card">
+              <div class="icon">✉</div>
+              <h3>反馈中心</h3>
+              <p>用户可以提交 BUG、功能建议和使用问题，系统会附带脱敏后的诊断摘要，减少沟通成本。</p>
+            </article>
+            <article class="card">
+              <div class="icon">↻</div>
+              <h3>自动更新体验</h3>
+              <p>支持检查更新、下载进度、安装确认和手动下载兜底，更新状态在应用内清晰展示。</p>
+            </article>
+          </div>
+        </div>
+      </section>
+
+      <section id="showcase">
+        <div class="container">
+          <div class="section-head">
+            <h2>核心界面一览。</h2>
+            <p>通过主界面、反馈中心和系统设置，快速了解下载归档、问题反馈与基础配置流程。</p>
+          </div>
+          <div class="showcase">
+            <div class="showcase-scroll" id="screenshotScroller">
+              <div class="showcase-sticky" id="screenshotSticky">
+                <div class="showcase-track" id="screenshotTrack">
+                  <div class="screenshot-slide">
+                    <div class="shot">
+                      <div class="screenshot-frame main">
+                        <img
+                          class="screenshot-image"
+                          src="https://foruda.gitee.com/images/1780203413611769087/2e92a52d_5151444.png"
+                          alt="EasyWechatDownload 主界面截图"
+                        />
+                      </div>
+                    </div>
+                  </div>
+                  <div class="screenshot-slide">
+                    <div class="shot">
+                      <div class="screenshot-frame main">
+                        <img
+                          class="screenshot-image"
+                          src="https://foruda.gitee.com/images/1780203408236867188/661bee12_5151444.png"
+                          alt="EasyWechatDownload 反馈中心截图"
+                        />
+                      </div>
+                    </div>
+                  </div>
+                  <div class="screenshot-slide">
+                    <div class="shot">
+                      <div class="screenshot-frame main">
+                        <img
+                          class="screenshot-image"
+                          src="https://foruda.gitee.com/images/1780203422817886614/d48e72b6_5151444.png"
+                          alt="EasyWechatDownload 系统设置截图"
+                        />
+                      </div>
+                    </div>
+                  </div>
+                </div>
+              </div>
+            </div>
+          </div>
+        </div>
+      </section>
+
+      <section id="workflow">
+        <div class="container">
+          <div class="section-head">
+            <h2>四步完成公众号内容归档。</h2>
+            <p>适合第一次使用，也适合反复批量下载的长期工作流。</p>
+          </div>
+          <div class="workflow">
+            <article class="step">
+              <h3>配置保存目录</h3>
+              <p>在系统设置里选择保存路径，按需要开启 HTML、Markdown、PDF、图片、音频或评论。</p>
+            </article>
+            <article class="step">
+              <h3>安装代理证书</h3>
+              <p>批量下载和监控下载需要信任代理证书，用于捕获公众号文章列表请求。</p>
+            </article>
+            <article class="step">
+              <h3>打开公众号主页</h3>
+              <p>点击批量下载后刷新目标公众号主页，再打开任意一篇文章，软件会捕获参数。</p>
+            </article>
+            <article class="step">
+              <h3>查看报告与反馈</h3>
+              <p>下载完成后查看任务报告；如遇异常，可通过反馈中心发送诊断摘要。</p>
+            </article>
+          </div>
+        </div>
+      </section>
+
+      <section>
+        <div class="container">
+          <div class="section-head">
+            <h2>覆盖常见归档格式。</h2>
+            <p>不同使用场景可以选择不同输出，既能保留原始页面，也能生成适合阅读的文件。</p>
+          </div>
+          <div class="formats">
+            <span class="pill">HTML</span>
+            <span class="pill">原始 HTML</span>
+            <span class="pill">Markdown</span>
+            <span class="pill">PDF</span>
+            <span class="pill">图片</span>
+            <span class="pill">音频</span>
+            <span class="pill">精选评论</span>
+            <span class="pill">MySQL</span>
+            <span class="pill">EPUB</span>
+            <span class="pill">下载报告 JSON</span>
+          </div>
+        </div>
+      </section>
+
+      <section id="download">
+        <div class="container">
+          <div class="download">
+            <div>
+              <h2>下载 EasyWechatDownload 最新版本</h2>
+              <p>支持 Windows x64 和 macOS universal。自动更新依赖 GitHub Releases，安装后可在应用内检查更新。</p>
+            </div>
+            <a class="button secondary" href="https://github.com/yangbuyiya/EasyWechatDownload/releases">前往 GitHub Releases</a>
+          </div>
+        </div>
+      </section>
+
+      <section>
+        <div class="container">
+          <div class="section-head">
+            <h2>常见问题。</h2>
+            <p>把用户最关心的安装、网络代理和下载失败问题提前说明。</p>
+          </div>
+          <div class="faq">
+            <article class="qa">
+              <h3>批量下载监听不到文章怎么办？</h3>
+              <p>先刷新公众号主页，再打开目标公众号任意一篇文章。倒计时结束后软件会自动恢复网络代理设置。</p>
+            </article>
+            <article class="qa">
+              <h3>会影响我自己的代理或 VPN 吗？</h3>
+              <p>软件会在开启本地代理前保存系统代理状态，结束后按原状态恢复，避免覆盖用户原有配置。</p>
+            </article>
+            <article class="qa">
+              <h3>反馈会带上隐私信息吗？</h3>
+              <p>反馈中心只附带脱敏后的诊断摘要，授权参数、本机用户路径和敏感 token 会被隐藏。</p>
+            </article>
+            <article class="qa">
+              <h3>可以整理成电子书吗？</h3>
+              <p>可以。创建电子书页面支持把 Markdown 内容转换为 EPUB，并展示生成状态和文件预览。</p>
+            </article>
+          </div>
+        </div>
+      </section>
+
+      <section id="community">
+        <div class="container">
+          <div class="community">
+            <div>
+              <h2>加入交流群</h2>
+              <p>遇到下载、代理、证书、更新或反馈发送问题，可以加入交流群沟通，也欢迎提出功能建议。</p>
+              <div class="community-note">添加时请备注：易下载</div>
+            </div>
+            <div class="community-qr">
+              <img
+                src="https://foruda.gitee.com/images/1780204881931055061/cdebe88e_5151444.jpg"
+                alt="EasyWechatDownload 交流群二维码"
+              />
+            </div>
+          </div>
+        </div>
+      </section>
+
+      <footer class="footer">
+        <div class="container">EasyWechatDownload 仅用于学习和个人资料归档，请勿用于商业用途。</div>
+      </footer>
+    </main>
+    <script>
+      const timerEl = document.getElementById("captureTimer");
+      const titleEl = document.getElementById("captureTitle");
+      const statusEl = document.getElementById("mockStatus");
+      const progressEl = document.getElementById("captureProgress");
+      const taskTags = Array.from(document.querySelectorAll("[data-task-tag]"));
+      const taskLines = Array.from(document.querySelectorAll("[data-task-line]"));
+      const taskFormats = Array.from(document.querySelectorAll("[data-task-format]"));
+
+      let countdown = 47;
+      let taskStep = 0;
+
+      function resetTaskCenter() {
+        taskStep = 0;
+        titleEl.textContent = "等待微信文章请求";
+        statusEl.classList.remove("is-captured");
+        taskTags.forEach((tag, index) => {
+          tag.className = index === 0 ? "tag info" : "tag idle";
+          tag.textContent = index === 0 ? "监听" : "等待";
+        });
+        taskLines.forEach((line, index) => {
+          line.className = index === 0 ? "line loading" : "line waiting";
+        });
+        taskFormats[0].textContent = "文章";
+        taskFormats[1].textContent = "PDF";
+        taskFormats[2].textContent = "MD";
+      }
+
+      function updateTaskCenter() {
+        if (countdown > 34) return;
+
+        if (taskStep === 0) {
+          taskTags[0].className = "tag";
+          taskTags[0].textContent = "成功";
+          taskLines[0].className = "line done";
+          taskTags[1].className = "tag info";
+          taskTags[1].textContent = "下载";
+          taskLines[1].className = "line loading";
+          taskStep = 1;
+          return;
+        }
+
+        if (countdown > 18 || taskStep > 1) return;
+
+        taskTags[1].className = "tag";
+        taskTags[1].textContent = "成功";
+        taskLines[1].className = "line done";
+        taskTags[2].className = "tag info";
+        taskTags[2].textContent = "下载";
+        taskLines[2].className = "line loading";
+        taskStep = 2;
+      }
+
+      function finishCapture() {
+        titleEl.textContent = "已捕获文章请求";
+        statusEl.classList.add("is-captured");
+        timerEl.textContent = "完成";
+        progressEl.style.width = "100%";
+        taskTags.forEach((tag) => {
+          tag.className = "tag";
+          tag.textContent = "成功";
+        });
+        taskLines.forEach((line) => {
+          line.className = "line done";
+        });
+      }
+
+      function tickCapturePreview() {
+        timerEl.classList.add("is-ticking");
+        window.setTimeout(() => timerEl.classList.remove("is-ticking"), 180);
+
+        if (countdown <= 0) {
+          finishCapture();
+          window.setTimeout(() => {
+            countdown = 47;
+            resetTaskCenter();
+            tickCapturePreview();
+          }, 1800);
+          return;
+        }
+
+        timerEl.textContent = `${countdown}s`;
+        progressEl.style.width = `${Math.max(6, ((47 - countdown) / 47) * 100)}%`;
+        updateTaskCenter();
+        countdown -= 1;
+        window.setTimeout(tickCapturePreview, 700);
+      }
+
+      resetTaskCenter();
+      tickCapturePreview();
+
+      const screenshotScroller = document.getElementById("screenshotScroller");
+      const screenshotSticky = document.getElementById("screenshotSticky");
+      const screenshotTrack = document.getElementById("screenshotTrack");
+
+      function updateScreenshotTrack() {
+        if (!screenshotScroller || !screenshotSticky || !screenshotTrack) return;
+
+        if (window.innerWidth <= 720) {
+          screenshotTrack.style.transform = "none";
+          return;
+        }
+
+        const stickyHeight = screenshotSticky.offsetHeight;
+        const maxTranslate = Math.max(0, screenshotTrack.scrollWidth - screenshotSticky.clientWidth);
+
+        const rect = screenshotScroller.getBoundingClientRect();
+        const scrollable = Math.max(1, screenshotScroller.offsetHeight - stickyHeight);
+        const progress = Math.min(1, Math.max(0, -rect.top / scrollable));
+
+        screenshotTrack.style.transform = `translate3d(${-maxTranslate * progress}px, 0, 0)`;
+      }
+
+      window.addEventListener("scroll", updateScreenshotTrack, { passive: true });
+      window.addEventListener("resize", updateScreenshotTrack);
+      window.addEventListener("load", updateScreenshotTrack);
+      updateScreenshotTrack();
+    </script>
+  </body>
+</html>
