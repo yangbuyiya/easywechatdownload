@@ -12,6 +12,7 @@
 [![GitHub downloads](https://img.shields.io/github/downloads/yangbuyiya/easyDownload/total?style=flat&color=blue)](https://github.com/yangbuyiya/easyDownload/releases)
 [![GitHub release](https://img.shields.io/github/v/release/yangbuyiya/easyDownload?style=flat)](https://github.com/yangbuyiya/easyDownload/releases)
 [![GitHub issues](https://img.shields.io/github/issues/yangbuyiya/easyDownload)](https://github.com/yangbuyiya/easyDownload/issues)
+[![Website](https://img.shields.io/badge/官网-easydownload-blue?style=flat)](https://easy-wechat-download.vercel.app/)
 
 </div>
 
