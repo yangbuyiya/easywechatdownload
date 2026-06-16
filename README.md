@@ -9,8 +9,7 @@
 支持单篇、批量、监控、公众号平台四种下载方式，导出 HTML / Markdown / PDF，图片音频评论一并带走，还能顺手存进 MySQL。
 
 [![GitHub stars](https://img.shields.io/github/stars/yangbuyiya/easyDownload?style=flat&color=gold)](https://github.com/yangbuyiya/easyDownload)
-[![GitHub downloads](https://img.shields.io/github/downloads/yangbuyiya/easyDownload/total?style=flat&color=blue)](https://github.com/yangbuyiya/easyDownload/releases)
-[![GitHub release](https://img.shields.io/github/v/release/yangbuyiya/easyDownload?style=flat)](https://github.com/yangbuyiya/easyDownload/releases)
+[![GitHub downloads](https://img.shields.io/badge/downloads-2231-blue?style=flat)](https://github.com/yangbuyiya/easyDownload/releases)
 [![GitHub issues](https://img.shields.io/github/issues/yangbuyiya/easyDownload)](https://github.com/yangbuyiya/easyDownload/issues)
 [![Website](https://img.shields.io/badge/官网-easydownload-blue?style=flat)](https://easy-wechat-download.vercel.app/)
 
